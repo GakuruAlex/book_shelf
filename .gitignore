@@ -2,3 +2,5 @@
 *.pycache
 .idea
 .vscode
+*.env
+*.pyc
