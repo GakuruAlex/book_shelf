@@ -1,0 +1,31 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Library
+{% endblock %}
+
+{% block content %}
+<h2 class="ms-3 mt-3">My Library</h2>
+
+<table class="container ms-5  mb-5">
+  <thead >
+    <tr >
+      <th  scope="col">Title</th>
+      <th scope="col">Author</th>
+      <th scope="col">Rating</th>
+    </tr>
+  </thead>
+
+{% for book in books %}
+ <tbody >
+    <tr class="bg-info">
+      <td class="col">{{book.title}}</td>
+      <td class="col">{{book.author}}</td>
+      <td class="col">{{book.rating}}/10</td>
+    </tr>
+
+</tbody>
+{% endfor %}
+</table>
+<a href="{{url_for('add_a_book')}}" class="btn btn-primary stretched-link ms-3">Add New Book</a>
+{% endblock%}
