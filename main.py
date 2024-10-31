@@ -9,6 +9,10 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 bootstrap = Bootstrap5(app)
 all_books = []
 
+@app.route("/")
+def index():
+    return render_template("home.html", books=all_books)
+
 @app.route("/add_book", methods=['GET','POST'])
 def add_a_book():
     form = AddBookForm()
@@ -20,6 +24,7 @@ def add_a_book():
         all_books.append(new_book)
         return redirect(url_for("success", title=title))
     return render_template('add_book.html', form=form)
+
 @app.route("/success/<title>", methods=["GET"])
 def success(title):
     return render_template("success.html", title=title)
