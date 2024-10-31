@@ -1,15 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    {% block style %}
-
-    {% endblock %}
+    {% extends 'index.html' %}
     {% block title %}
-        My Library
+    Add Book
     {% endblock %}
-</head>
-<body>
 
-</body>
-</html>
+    {% block content %}
+    <h1 class="display-4 ms-5 mt-3 rounded"> Add Book</h1>
+    {% if form.errors %}
+    <ul class="errors">
+    {% for error in form.errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    <form class="col-lg-6 m-5 bg-warning w-50 offset-lg-3 " action="{{ url_for('add_a_book')}}" method="POST">
+      {{ form.csrf_token }}
+  <div class="row justify-content-center mb-3 ms-5">
+    <div class="col-sm-2 mt-3" >{{form.book_name.label}}</div>
+    <div class="col-sm-10 mt-3">
+      {{form.book_name}}
+    </div>
+  </div>
+  <div class="row justify-content-center mb-3 ms-5">
+    <div class="control-label col-sm-2" >{{form.author.label}}</div>
+    <div class="col-sm-10">
+      {{form.author}}
+    </div>
+  </div>
+    <div class="row justify-content-center mb-3 ms-5">
+    <div class="control-label col-sm-2" >{{form.rating.label}}</div>
+    <div class="col-sm-10 ">
+      {{form.rating}}
+    </div>
+  </div>
+
+  <div class="row text-center rounded-pill">
+    <div class="col-lg-offset-2 col-sm-10 mb-3">
+      {{form.add_book}}
+    </div>
+  </div>
+</form>
+    {% endblock %}
