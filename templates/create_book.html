@@ -12,7 +12,7 @@
     {% endfor %}
     </ul>
 {% endif %}
-    <form class="col-lg-6 m-5 bg-warning w-50 offset-lg-3 " action="{{ url_for('add_a_book')}}" method="POST">
+    <form class="col-lg-6 m-5 bg-warning w-50 offset-lg-3 " action="{{ url_for('create_book')}}" method="POST">
       {{ form.csrf_token }}
   <div class="row justify-content-center mb-3 ms-5">
     <div class="col-sm-2 mt-3" >{{form.book_name.label}}</div>
