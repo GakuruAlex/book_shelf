@@ -3,9 +3,20 @@ from flask import Flask, redirect, render_template, url_for
 from flask_bootstrap import Bootstrap5
 from book_form import AddBookForm
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
+import book_model
 app = Flask(__name__)
+db = book_model.db
 load_dotenv(dotenv_path="./key.env")
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///books.db"
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+
+
+
 bootstrap = Bootstrap5(app)
 all_books = []
 
@@ -13,7 +24,7 @@ all_books = []
 def index():
     return render_template("home.html", books=all_books)
 
-@app.route("/add_book", methods=['GET','POST'])
+@app.route("/books/create", methods=['GET','POST'])
 def add_a_book():
     form = AddBookForm()
     if form.validate_on_submit():
