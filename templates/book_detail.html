@@ -5,18 +5,18 @@
 {% endblock %}
 
 {% block content %}
-<div class="card" style="width: 18rem;">
+<div class="card m-5 w-25">
     <div class="card-body">
         <h5 class="card-title">
-            {{book.title}}
+            Title: {{book.title}}
         </h5>
         <h5 class="card-title">
-            {{book.author}}
+            Author: {{book.author}}
         </h5>
         <h5 class="book.title">
-            {{book.rating}}
+            Rating: {{book.rating}}/10
         </h5>
-        <a class="btn btn-primary" href="{% url_for('index') %}">Home</a>
+        <a class="btn btn-primary" href="{{url_for('index') }}">Home</a>
     </div>
 </div>
 {% endblock %}
