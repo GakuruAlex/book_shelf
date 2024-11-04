@@ -20,8 +20,8 @@ bootstrap = Bootstrap5(app)
 
 @app.route("/books")
 def index():
-    books = db.session.execute(db.select(book_model.Book)).scalars()
-    return render_template("home.html", books=books)
+    books = db.session.query(book_model.Book).all()
+    return render_template("home.html", books=books[10:])
 
 @app.route("/books/create", methods=['GET','POST'])
 def create_book():
