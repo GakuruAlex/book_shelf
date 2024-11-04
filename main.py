@@ -18,9 +18,10 @@ with app.app_context():
 
 bootstrap = Bootstrap5(app)
 
-@app.route("/")
+@app.route("/books")
 def index():
-    return render_template("home.html", books=all_books)
+    books = db.session.execute(db.select(book_model.Book)).scalars()
+    return render_template("home.html", books=books)
 
 @app.route("/books/create", methods=['GET','POST'])
 def create_book():
@@ -37,7 +38,7 @@ def create_book():
 
 @app.route("/books/<int:id>", methods=["GET"])
 def book_detail(id):
-    book = db.get_or_404(book_model.Book, id=id)
+    book = book_model.Book.query.get_or_404(id)
     return render_template("book_detail.html", book=book)
 if __name__ == "__main__":
     app.run(debug=True)
