@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, redirect, render_template, url_for, flash, session
 from flask_bootstrap import Bootstrap5
 from book_form import AddBookForm
 from dotenv import load_dotenv
@@ -33,12 +33,16 @@ def create_book():
         book =  book_model.Book(title=title, author=author, rating=rating)
         db.session.add(book)
         db.session.commit()
+        flash(f"{title} added successfully!", "success")
         return redirect(url_for("book_detail", id=book.id))
     return render_template('create_book.html', form=form)
 
 @app.route("/books/<int:id>", methods=["GET"])
 def book_detail(id):
-    book = book_model.Book.query.get_or_404(id)
-    return render_template("book_detail.html", book=book)
+    book = db.get_or_404(book_model.Book,id)
+    message = session.pop("message", None)
+    if message:
+        flash(message)
+    return render_template("book_detail.html",book=book)
 if __name__ == "__main__":
     app.run(debug=True)
