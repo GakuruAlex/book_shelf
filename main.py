@@ -17,7 +17,12 @@ with app.app_context():
     db.create_all()
 
 bootstrap = Bootstrap5(app)
-
+def get_book(id):
+    try:
+        return db.get_or_404(Book, id)
+    except NotFound:
+        flash(f"Book with id {id} not found!")
+        return None
 @app.route("/books")
 def index():
     books = db.session.query(Book).all()
@@ -35,30 +40,47 @@ def create_book():
         db.session.commit()
         flash(f"{title} added successfully!", "success")
         return redirect(url_for("book_detail", id=book.id))
-    return render_template('create_book.html', form=form)
-
+    return render_template('create_book.html', heading="Create Book ",form=form)
+@app.route("/books/<int:id>/edit")
+def edit_book(id):
+    book = get_book(id)
+    if book:
+        form = AddBookForm(obj=book)
+        if form.validate_on_submit():
+            book.title = form.book_name.data
+            book.author = form.author.data
+            book.rating = int(form.rating.data)
+            db.session.add(book)
+            db.session.commit()
+            flash(f"Book details edited successfully!")
+            return redirect(url_for('index'))
+        return render_template("create_book.html",heading="Edit Book", form=form)
+    else:
+        return render_template("error.html")
 @app.route("/books/<int:id>", methods=["GET"])
 def book_detail(id):
-    book = db.get_or_404(Book,id)
-    message = session.pop("message", None)
-    if message:
-        flash(message)
-    return render_template("book_detail.html",book=book)
+    book = get_book(id)
+    if book:
+        message = session.pop("message", None)
+        if message:
+            flash(message)
+        return render_template("book_detail.html",book=book)
+    return render_template('error.html')
 @app.route("/books/<int:id>/delete", methods=["GET","POST"])
 def delete_book(id):
-    try:
         book = db.get_or_404(Book, id)
-        try:
-            db.session.delete(book)
-            flash(f"{book.title} deleted!")
-            db.session.commit()
-            return redirect(url_for('index'))
-        except Exception as e:
-            flash(f"{e}")
-            db.session.rollback()
-            return redirect(url_for('index'))
-    except NotFound:
-        flash(f"Book with id {id} not found!")
-        return redirect(url_for("index"))
+        if book:
+            try:
+                db.session.delete(book)
+                flash(f"{book.title} deleted!")
+                db.session.commit()
+                return redirect(url_for('index'))
+            except Exception as e:
+                flash(f"{e}")
+                db.session.rollback()
+                return redirect(url_for('index'))
+        else:
+            return redirect(url_for("index"))
+
 if __name__ == "__main__":
     app.run(debug=True)
