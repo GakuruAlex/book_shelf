@@ -3,9 +3,9 @@ from flask import Flask, redirect, render_template, url_for, flash, session
 from flask_bootstrap import Bootstrap5
 from book_form import AddBookForm
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 import book_model
+from book_model import Book
+from werkzeug.exceptions import NotFound
 app = Flask(__name__)
 db = book_model.db
 
@@ -17,11 +17,12 @@ with app.app_context():
     db.create_all()
 
 bootstrap = Bootstrap5(app)
-
+def get_book(id):
+    return db.get_or_404(Book, id)
 @app.route("/books")
 def index():
-    books = db.session.query(book_model.Book).all()
-    return render_template("home.html", books=books[10:])
+    books = db.session.query(Book).all()
+    return render_template("home.html", books=books)
 
 @app.route("/books/create", methods=['GET','POST'])
 def create_book():
@@ -30,7 +31,7 @@ def create_book():
         title = form.book_name.data
         author = form.author.data
         rating = int(form.rating.data)
-        book =  book_model.Book(title=title, author=author, rating=rating)
+        book =  Book(title=title, author=author, rating=rating)
         db.session.add(book)
         db.session.commit()
         flash(f"{title} added successfully!", "success")
@@ -39,10 +40,26 @@ def create_book():
 
 @app.route("/books/<int:id>", methods=["GET"])
 def book_detail(id):
-    book = db.get_or_404(book_model.Book,id)
+    book = db.get_or_404(Book,id)
     message = session.pop("message", None)
     if message:
         flash(message)
     return render_template("book_detail.html",book=book)
+@app.route("/books/<int:id>/delete", methods=["GET","POST"])
+def delete_book(id):
+    try:
+        book = db.get_or_404(Book, id)
+        try:
+            db.session.delete(book)
+            flash(f"{book.title} deleted!")
+            db.session.commit()
+            return redirect(url_for('index'))
+        except Exception as e:
+            flash(f"{e}")
+            db.session.rollback()
+            return redirect(url_for('index'))
+    except NotFound:
+        flash(f"Book with id {id} not found!")
+        return redirect(url_for("index"))
 if __name__ == "__main__":
     app.run(debug=True)
