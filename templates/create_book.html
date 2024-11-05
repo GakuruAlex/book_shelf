@@ -4,7 +4,7 @@
     {% endblock %}
 
     {% block content %}
-    <h1 class="display-4 ms-5 mt-3 rounded"> Add Book</h1>
+    <h1 class="display-4 ms-5 mt-3 rounded"> {{heading}}</h1>
     {% if form.errors %}
     <ul class="errors">
     {% for error in form.errors %}
@@ -12,12 +12,13 @@
     {% endfor %}
     </ul>
 {% endif %}
-    <form class="col-lg-6 m-5 bg-warning w-50 offset-lg-3 " action="{{ url_for('create_book')}}" method="POST">
+
+    <form class="col-lg-6 m-5 bg-warning w-50 offset-lg-3 " action="{{ url_for(url_action[0], id=url_action[1])}}" method="POST">
       {{ form.csrf_token }}
   <div class="row justify-content-center mb-3 ms-5">
-    <div class="col-sm-2 mt-3" >{{form.book_name.label}}</div>
+    <div class="col-sm-2 mt-3" >{{form.title.label}}</div>
     <div class="col-sm-10 mt-3">
-      {{form.book_name}}
+      {{form.title}}
     </div>
   </div>
   <div class="row justify-content-center mb-3 ms-5">
@@ -32,11 +33,14 @@
       {{form.rating}}
     </div>
   </div>
-
-  <div class="row text-center rounded-pill">
-    <div class="col-lg-offset-2 col-sm-10 mb-3">
-      {{form.add_book}}
-    </div>
+{% if heading == "Create Book"%}
+  <div class="mb-3  text-center">
+    <input type="submit" value="Create Book" class="btn btn-primary stretched-link mb-3">
   </div>
+  {%else%}
+  <div class=" mb-3 text-center">
+    <input type="submit" value="Edit" class="btn btn-primary stretched-link mb-5">
+  </div>
+{% endif %}
 </form>
     {% endblock %}
