@@ -43,7 +43,10 @@ Library
       <td class="col ">{{book.title}}</td>
       <td class="col ">{{book.author}}</td>
       <td class="col ">{{book.rating}}/10</td>
-      <td class="col"><a class="btn btn-danger" href="{{url_for('delete_book' ,id=book.id)}}">Delete</a></td>
+      <td class="col">
+        <a class="btn btn-primary" href="{{url_for('book_detail', id=book.id)}}">More</a>
+        <a class="btn btn-danger" href="{{url_for('delete_book' ,id=book.id)}}">Delete</a>
+      </td>
     </tr>
 
 </tbody>
