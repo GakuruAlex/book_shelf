@@ -4,9 +4,26 @@
 {% block title %}
 Library
 {% endblock %}
+{% block style%}
+{{bootstrap.load_css()}}
+<link rel="stylesheet" href="{{url_for('static', filename='flash.css')}}">
+{% endblock %}
+{%block script %} <script src="{{url_for('static', filename='js/flash.js')}}"></script>
+{% endblock %}
+
 
 {% block content %}
 <h2 class="ms-3 mt-3">My Library</h2>
+<div class="flashes ms-5" >
+  {% with messages= get_flashed_messages()%}
+  {% if messages %}
+  {% for message in messages %}
+  <p class="alert alert-danger" id="flash_warning">{{message}}</p>
+  {%endfor%}
+  {% endif %}
+  {% endwith %}
+
+</div>
 
 <table class="table table-bordered border-primary ms-5 table-sm" style="width: 50%;">
   <thead class="table-dark" >
@@ -15,6 +32,7 @@ Library
       <th  scope="col">Title</th>
       <th scope="col">Author</th>
       <th scope="col">Rating</th>
+      <th scope="col">Action</th>
     </tr>
   </thead>
 
@@ -25,12 +43,17 @@ Library
       <td class="col ">{{book.title}}</td>
       <td class="col ">{{book.author}}</td>
       <td class="col ">{{book.rating}}/10</td>
+      <td class="col"><a class="btn btn-danger" href="{{url_for('delete_book' ,id=book.id)}}">Delete</a></td>
     </tr>
 
 </tbody>
 {% endfor %}
 </table>
 
-<a href="{{url_for('create_book')}}" class="btn btn-primary stretched-link ms-3">Add New Book</a>
+<a href="{{url_for('create_book')}}" class="btn btn-primary  ms-5 mb-5">Add New Book</a>
+<script>
+  flashContainer = document.getElementById("flash_warning")
+  setClear(5000, flashContainer)
+</script>
 
 {% endblock%}
