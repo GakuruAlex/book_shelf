@@ -32,7 +32,7 @@ def index():
 def create_book():
     form = AddBookForm()
     if form.validate_on_submit():
-        title = form.book_name.data
+        title = form.title.data
         author = form.author.data
         rating = int(form.rating.data)
         book =  Book(title=title, author=author, rating=rating)
@@ -40,21 +40,20 @@ def create_book():
         db.session.commit()
         flash(f"{title} added successfully!", "success")
         return redirect(url_for("book_detail", id=book.id))
-    return render_template('create_book.html', heading="Create Book ",form=form)
-@app.route("/books/<int:id>/edit")
+    return render_template('create_book.html', heading="Create Book",url_action=('create_book', 0),form=form)
+@app.route("/books/<int:id>/edit", methods=["GET","POST", ])
 def edit_book(id):
     book = get_book(id)
     if book:
         form = AddBookForm(obj=book)
         if form.validate_on_submit():
-            book.title = form.book_name.data
+            book.title = form.title.data
             book.author = form.author.data
             book.rating = int(form.rating.data)
-            db.session.add(book)
             db.session.commit()
             flash(f"Book details edited successfully!")
             return redirect(url_for('index'))
-        return render_template("create_book.html",heading="Edit Book", form=form)
+        return render_template("create_book.html",heading="Edit Book",url_action=('edit_book', id), form=form)
     else:
         return render_template("error.html")
 @app.route("/books/<int:id>", methods=["GET"])
