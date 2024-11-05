@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% extends 'index.html' %}
-{% block head %}
+
 {% block title %}
 {{book.id}}
 {% endblock %}
@@ -10,7 +10,7 @@
 {% endblock %}
 {%block script %} <script src="{{url_for('static', filename='js/flash.js')}}"></script>
 {% endblock %}
-{% endblock head %}
+
 
 {% block content %}
 {% with messages=get_flashed_messages(with_categories=True)%}
