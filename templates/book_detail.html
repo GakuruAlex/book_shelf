@@ -11,7 +11,6 @@
 {%block script %} <script src="{{url_for('static', filename='js/flash.js')}}"></script>
 {% endblock %}
 
-
 {% block content %}
 {% with messages=get_flashed_messages(with_categories=True)%}
 {% if messages %}
