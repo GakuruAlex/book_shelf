@@ -17,8 +17,7 @@ with app.app_context():
     db.create_all()
 
 bootstrap = Bootstrap5(app)
-def get_book(id):
-    return db.get_or_404(Book, id)
+
 @app.route("/books")
 def index():
     books = db.session.query(Book).all()
