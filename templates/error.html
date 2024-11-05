@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+{% extends 'index.html' %}
+{% block content%}
+{% with messages= get_flashed_messages() %}
+
+{% if messages%}
+    {% for message in messages %}
+      <p class="alert alert-warning ms-5 mt-5 " style="width: 30em; border-radius: 7px;" >{{message}}</p>
+      <a href="{{url_for('index')}}" class="btn btn-primary ms-5 mt-1">Home</a>
+    {% endfor %}
+{% endif %}
+
+{%endwith%}
+{% endblock %}

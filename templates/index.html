@@ -5,18 +5,19 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
     {% block head %}
-        {% block style %}
-    {{bootstrap.load_css()}}
-    {% endblock %}
-    {% block script%}
-    {% endblock %}
-    <title>
-        {% block title %}
+        {% block style%}
+            {{bootstrap.load_css()}}
+            <link rel="stylesheet" href="{{url_for('static', filename='index.css')}}">
         {% endblock %}
-    </title>
+        {% block script%}
+        {% endblock %}
+        <title>
+            {% block title %}
+            {% endblock %}
+        </title>
     {% endblock %}
 </head>
-<body>
+<body style="background-color:  #74F043;">
     {% block content %}
     {% endblock %}
 </body>
