@@ -9,4 +9,5 @@ class Book(db.Model):
     title: Mapped[str] = mapped_column(String, unique=True)
     author: Mapped[str] = mapped_column(String)
     rating: Mapped[int] = mapped_column(Integer)
-    
+    def get_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
