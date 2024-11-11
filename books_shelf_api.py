@@ -61,6 +61,6 @@ def edit_book(id):
     if "author" in request.form:
         book.author = request.form.get("author")
     db.session.commit()
-    return jsonify(book=f"Edited :{book.get_dict()}"), 308
+    return jsonify(book=f"Edited :{book.get_dict()}"), 200
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
