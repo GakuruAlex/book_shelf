@@ -35,7 +35,7 @@ def add_book()->Book:
             db.session.rollback()
             return f"Exception {e}"
     return jsonify(response=book.get_dict()), 308
-@app.route("/books/search-book/")
+@app.route("/books/search-book/", methods=["GET"])
 def search_book()->Book:
     q= request.form.get("q").title()
     db.session.expire_all()
@@ -45,5 +45,22 @@ def search_book()->Book:
     ) ).all()
     print(books)
     return jsonify(books=[book.get_dict() for book in books]), 200
+@app.route("/books/<int:id>/delete/", methods=["POST"])
+def delete_book(id):
+    book = db.get_or_404(Book, id)
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify(response=f"Book with ID {id} deleted"), 200
+@app.route("/books/<int:id>/edit-book/", methods=["PATCH"])
+def edit_book(id):
+    book = db.get_or_404(Book, id)
+    if "rating" in request.form:
+        book.rating = int(request.form.get("rating"))
+    if "title" in request.form:
+        book.title = request.form.get("title").title()
+    if "author" in request.form:
+        book.author = request.form.get("author")
+    db.session.commit()
+    return jsonify(book=f"Edited :{book.get_dict()}"), 308
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
