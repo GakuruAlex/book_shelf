@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, render_template, url_for, flash,  abort, session
+from flask import Flask, redirect, render_template, url_for, flash,  abort, session, request
 from flask_bootstrap import Bootstrap5
 from book_form import AddBookForm, SignUpForm, LoginForm
 from dotenv import load_dotenv
@@ -8,6 +8,7 @@ from book_model import Book, User
 from werkzeug.exceptions import NotFound
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required
+from sqlalchemy import or_
 app = Flask(__name__)
 db = book_model.db
 
@@ -87,6 +88,21 @@ def delete_book(id):
                 return redirect(url_for('index'))
         else:
             return redirect(url_for("index"))
+
+@app.route("/books/search/")
+def search():
+        q = request.args.get("search")
+        if q == "":
+            books = db.session.query(Book).all()
+        else:
+            books =Book.query.filter(
+            or_(
+                Book.title.ilike(f"%{q}%"),
+                Book.author.ilike(f"%{q}%"),
+                Book.rating.ilike(f"%{q}%"),
+                )
+            ).all()
+        return render_template("home.html", books=books)
 
 @login_manager.user_loader
 def load_user(user_id):
