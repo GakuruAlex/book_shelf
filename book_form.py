@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField
+from wtforms import StringField, PasswordField, EmailField, SearchField
 from wtforms.validators import DataRequired, Length, EqualTo, Email
 import email_validator
 class AddBookForm(FlaskForm):
@@ -30,3 +30,4 @@ class LoginForm(FlaskForm):
         Length(min= 14, message="Password Should be 14 characters long!")
         ],
         render_kw={"placeholder": "Your password", "class":"form-control"})
+
