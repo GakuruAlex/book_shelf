@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-
+{% extends 'index.html' %}
 
 {% block content %}
-    <form class="row g-3" action="{{url_for('login')}}" method="post">
+    <form class="row g-3 mt-3 ms-3" action="{{url_for('login')}}" method="post">
         {{form.csrf_token}}
   <div class="col-auto">
     {{form.username}}
@@ -13,6 +13,6 @@
   <div class="col-auto">
     <button type="submit" class="btn btn-primary mb-3">Login</button>
   </div>
-   <div> Not registered, Register here <a href="{{url_for(signup)}}" class="link-dark">Register</a></div>
+   <div> Not registered, Register here <a href="{{url_for('user_signup')}}" class="link-dark">Register</a></div>
 </form>
 {% endblock content %}
