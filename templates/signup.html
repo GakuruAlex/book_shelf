@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% extends 'index.html' %}
+
+
+{% block head %}
+
+{% block style %}
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+{% endblock style %}
+{% block script %}
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+{% endblock script %}
+
+{% endblock head %}
+
+{% block content %}
+{% if form.errors %}
+    <ul class="errors">
+    {% for error in form.errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+    <div class="container register-form mt-5">
+            <div class="form">
+                <div class="note">
+                    <p>Register</p>
+                </div>
+                <form action="{{url_for('user_signup')}}" method="POST" >
+                    {{ form.csrf_token }}
+                <div class="form-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group" >
+                                {{form.username}}
+                            </div>
+                            <div class="form-group">
+                                {{form.email}}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{form.password}}
+                            </div>
+                            <div class="form-group">
+                               {{form.confirm_password}}
+                        </div>
+                    </div>
+                </div>
+                 <input type="submit" value="Register" class="btn btn-primary">
+                </div>
+                </form>
+            </div>
+
+        </div>
+{% endblock content %}
+

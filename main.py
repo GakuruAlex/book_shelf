@@ -1,11 +1,14 @@
 import os
-from flask import Flask, redirect, render_template, url_for, flash, session
+from flask import Flask, redirect, render_template, url_for, flash,  abort, session, request
 from flask_bootstrap import Bootstrap5
-from book_form import AddBookForm
+from book_form import AddBookForm, SignUpForm, LoginForm
 from dotenv import load_dotenv
 import book_model
-from book_model import Book
+from book_model import Book, User
 from werkzeug.exceptions import NotFound
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, login_required
+from sqlalchemy import or_
 app = Flask(__name__)
 db = book_model.db
 
@@ -13,6 +16,9 @@ load_dotenv(dotenv_path="./key.env")
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///books.db"
 db.init_app(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 with app.app_context():
     db.create_all()
 
@@ -27,7 +33,7 @@ def get_book(id):
 def index():
     books = db.session.query(Book).all()
     return render_template("home.html", books=books)
-
+@login_required
 @app.route("/books/create", methods=['GET','POST'])
 def create_book():
     form = AddBookForm()
@@ -41,6 +47,7 @@ def create_book():
         flash(f"{title} added successfully!", "success")
         return redirect(url_for("book_detail", id=book.id))
     return render_template('create_book.html', heading="Create Book",url_action=('create_book', 0),form=form)
+@login_required
 @app.route("/books/<int:id>/edit", methods=["GET","POST", ])
 def edit_book(id):
     book = get_book(id)
@@ -66,6 +73,7 @@ def book_detail(id):
         return render_template("book_detail.html",book=book)
     return render_template('error.html')
 @app.route("/books/<int:id>/delete", methods=["GET","POST"])
+@login_required
 def delete_book(id):
         book = db.get_or_404(Book, id)
         if book:
@@ -80,6 +88,55 @@ def delete_book(id):
                 return redirect(url_for('index'))
         else:
             return redirect(url_for("index"))
+
+@app.route("/books/search/")
+def search():
+        q = request.args.get("search")
+        if q == "":
+            books = db.session.query(Book).all()
+        else:
+            books =Book.query.filter(
+            or_(
+                Book.title.ilike(f"%{q}%"),
+                Book.author.ilike(f"%{q}%"),
+                Book.rating.ilike(f"%{q}%"),
+                )
+            ).all()
+        return render_template("home.html", books=books)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.get_or_404(User, user_id)
+@app.route("/users/signup/", methods=["GET","POST"])
+def user_signup():
+    form = SignUpForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        email = form.email.data
+        hashed_password = generate_password_hash(password=password, method="scrypt", salt_length=8)
+        user = User(username = username, password = hashed_password , email= email)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for("login")), 201
+    return render_template("signup.html", form=form)
+
+@app.route("/users/login/", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        user = db.session.query(User).filter_by(username=username).scalar()
+        if check_password_hash(user.get_dict()["password"], password):
+            login_user(user)
+            flash("Login Success")
+            return redirect(url_for("index"))
+        abort(401)
+        login_manager.login_view("login")
+    return render_template("login.html", form=form)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
