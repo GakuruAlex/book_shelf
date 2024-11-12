@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, EmailField
 from wtforms.validators import DataRequired, Length, EqualTo, Email
+import email_validator
 class AddBookForm(FlaskForm):
     title = StringField(label="Book Name" , validators=[DataRequired()])
     author = StringField(label="Author", validators=[DataRequired()])
