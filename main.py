@@ -7,7 +7,7 @@ import book_model
 from book_model import Book, User
 from werkzeug.exceptions import NotFound
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_user, login_required
+from flask_login import LoginManager, login_user, login_required, logout_user
 from sqlalchemy import or_
 app = Flask(__name__)
 db = book_model.db
@@ -19,6 +19,7 @@ db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 with app.app_context():
     db.create_all()
 
@@ -33,8 +34,9 @@ def get_book(id):
 def index():
     books = db.session.query(Book).all()
     return render_template("home.html", books=books)
-@login_required
+
 @app.route("/books/create", methods=['GET','POST'])
+@login_required
 def create_book():
     form = AddBookForm()
     if form.validate_on_submit():
@@ -47,8 +49,9 @@ def create_book():
         flash(f"{title} added successfully!", "success")
         return redirect(url_for("book_detail", id=book.id))
     return render_template('create_book.html', heading="Create Book",url_action=('create_book', 0),form=form)
-@login_required
+
 @app.route("/books/<int:id>/edit", methods=["GET","POST", ])
+@login_required
 def edit_book(id):
     book = get_book(id)
     if book:
@@ -136,7 +139,11 @@ def login():
         login_manager.login_view("login")
     return render_template("login.html", form=form)
 
-
+@login_required
+@app.route("/logout/")
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
